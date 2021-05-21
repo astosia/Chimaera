@@ -1,0 +1,165 @@
+{
+    "author": "astosia",
+    "dependencies": {
+        "pebble-clay": "^1.0.4",
+        "pebble-fctx": "^1.5.0",
+        "pebble-fctx-compiler": "^1.2.2"
+    },
+    "keywords": [],
+    "name": "Chimaera",
+    "pebble": {
+        "capabilities": [
+            "configurable",
+            "location"
+        ],
+        "displayName": "Chimaera",
+        "enableMultiJS": true,
+        "messageKeys": [
+            "Back1Color",
+            "Back1ColorN",
+            "Back2Color",
+            "Back2ColorN",
+            "FrameColor2",
+            "FrameColor2N",
+            "FrameColor",
+            "FrameColorN",
+            "Text1Color",
+            "Text1ColorN",
+            "Text2Color",
+            "Text2ColorN",
+            "FrameColor",
+            "FrameColorN",
+            "WeatherCond",
+            "WeatherTemp",
+            "HourSunrise",
+            "HourSunset",
+            "HealthOff",
+            "AddZero12h",
+            "RemoveZero24h",
+            "NameLocation",
+            "UpSlider",
+            "NightTheme",
+            "APIKEY_User",
+            "WeatherUnit",
+            "Weathertime",
+            "Weathertimecapture",
+            "WeatherProv",
+            "EmailPMKEY",
+            "PINPMKEY",
+            "HourColor",
+            "HourColorN",
+            "MinColor",
+            "MinColorN",
+            "WeatherWind",
+            "bluetoothvibe",
+            "WEATHER_SUNSET_KEY",
+            "WEATHER_SUNSET_KEY_12H",
+            "WEATHER_SUNRISE_KEY_12H",
+            "Text3Color",
+            "Text3ColorN",
+            "Text7Color",
+            "Text7ColorN",
+            "Text8Color",
+            "Text8ColorN",
+            "Text9Color",
+            "Text9ColorN",
+            "Text10Color",
+            "Text10ColorN",
+            "IconNow",
+            "IconFore",
+            "TempFore",
+            "WindFore",
+            "TempForeLow",
+            "Text4Color",
+            "Text4ColorN",
+            "WindIconNow",
+            "WindIconAve",
+            "Text5Color",
+            "Text5ColorN",
+            "WindUnit",
+            "RightLeft",
+            "Rotate",
+            "MoonPhase",
+            "WEATHER_SUNRISE_KEY",
+            "Lat",
+            "Long",
+            "FontChoice",
+            "FrameColor1",
+            "FrameColor2",
+            "FrameColor1N",
+            "FrameColor2N",
+            "Text6Color",
+            "Text6ColorN"
+        ],
+        "projectType": "native",
+        "resources": {
+            "media": [
+                {
+                    "file": "fonts/Dripicons",
+                    "characterRegex": "[z]",
+                    "name": "FONT_DRIPICONS_16",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
+                    "file": "data/SteelfishRg-Regular.ffont",
+                    "name": "FONT_STEELFISHRG",
+                    "targetPlatforms": null,
+                    "type": "raw"
+                },
+                {
+                    "file": "data/OpenDyslexic-Cond.ffont",
+                    "name": "FONT_OPEND",
+                    "targetPlatforms": [
+                        "basalt",
+                        "chalk",
+                        "diorite"
+                    ],
+                    "type": "raw"
+                },
+                {
+                    "file": "data/OPTIBinnerGothic.ffont",
+                    "name": "FONT_BINGOTH",
+                    "targetPlatforms": [
+                        "basalt",
+                        "chalk",
+                        "diorite"
+                    ],
+                    "type": "raw"
+                },
+                {
+                    "file": "data/Zep.ffont",
+                    "name": "FONT_ZEP",
+                    "targetPlatforms": [
+                        "basalt",
+                        "chalk",
+                        "diorite"
+                    ],
+                    "type": "raw"
+                },
+                {
+                    "file": "data/Copse-Cond.ffont",
+                    "name": "FONT_COPSE",
+                    "targetPlatforms": [
+                        "basalt",
+                        "chalk",
+                        "diorite"
+                    ],
+                    "type": "raw"
+                }
+            ]
+        },
+        "sdkVersion": "3",
+        "targetPlatforms": [
+            "aplite",
+            "basalt",
+            "chalk",
+            "diorite"
+        ],
+        "uuid": "d549bf9d-c5a8-40e6-b6ff-b76f6e0c89f6",
+        "watchapp": {
+            "watchface": true
+        }
+    },
+    "version": "1.0.0"
+}
