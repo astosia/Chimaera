@@ -285,8 +285,10 @@ function suncalcinfo (pos){
         var sunsetStr = String(sunsetStrhr + ":" + sunsetStrmin);
         var sunriseStrhr = ('0'+sunTimes.sunrise.getHours()).substr(-2);
         var sunriseStrmin = ('0'+sunTimes.sunrise.getMinutes()).substr(-2);
-        var sunsetint= (sunsetStrhr*1) + sunsetStrmin;
-        var sunriseint= (sunriseStrhr*1) + sunriseStrmin;
+        var sunriseint = sunTimes.sunrise.getHours()*100+sunTimes.sunrise.getMinutes();
+        var sunsetint = sunTimes.sunset.getHours()*100+sunTimes.sunset.getMinutes();
+        //var sunsetint= String((sunsetStrhr*1) + sunsetStrmin);
+        //var sunriseint= String((sunriseStrhr*1) + sunriseStrmin);
         var sunriseStr = String(sunriseStrhr + ":" + sunriseStrmin);
         var sunsetStrhr12 = parseInt(sunTimes.sunset.getHours());
         var sunriseStrhr12 = parseInt(sunTimes.sunrise.getHours());

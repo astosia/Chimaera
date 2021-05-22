@@ -137,9 +137,9 @@ static FFont* FontSelect(FFont* FontTime1, FFont* FontTime2, FFont* FontTime3){
   }
 #endif*/
 // Callback for js request
-/*void request_watchjs(){
+void request_watchjs(){
   //Starting loop at 0
-  s_loop = 0;
+  //s_loop = 0;
   // Begin dictionary
   DictionaryIterator * iter;
   app_message_outbox_begin( & iter);
@@ -147,7 +147,7 @@ static FFont* FontSelect(FFont* FontTime1, FFont* FontTime2, FFont* FontTime3){
   dict_write_uint8(iter, 0, 0);
   // Send the message!
   app_message_outbox_send();
-}*/
+}
 
 /*static void accel_tap_handler(AccelAxisType axis, int32_t direction) {
   // A tap event occured
@@ -177,12 +177,12 @@ static void quiet_time_icon () {
   }
 }
 
-/*static void onreconnection(bool before, bool now){
+static void onreconnection(bool before, bool now){
   if (!before && now){
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "BT reconnected, requesting weather at %d:%d", s_hours,s_minutes);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "BT reconnected, requesting watchjs at %d:%d", s_hours,s_minutes);
     request_watchjs();
   }
-}*/
+}
 
 
 //Add in HEALTH to the watchface
@@ -612,7 +612,7 @@ static void layer_update_proc_bt(Layer * layer3, GContext * ctx3){
       GRect(180-20-30,140,16,20),
       GRect(144-19,140,18,20)));
 
- //onreconnection(BTOn, connection_service_peek_pebble_app_connection());
+ onreconnection(BTOn, connection_service_peek_pebble_app_connection());
  bluetooth_callback(connection_service_peek_pebble_app_connection());
 
  graphics_context_set_text_color(ctx3, ColorSelect(settings.Text5Color, settings.Text5ColorN));
@@ -917,11 +917,13 @@ settings.Text10Color = GColorFromHEX(tx10_color_t-> value -> int32);
     //Hour Sunrise and Sunset
   Tuple * sunrise_t = dict_find(iter, MESSAGE_KEY_HourSunrise);
   if (sunrise_t){
-    HourSunrise = (int) sunrise_t -> value -> int32;
+    HourSunrise = sunrise_t -> value -> int32;
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "HourSunrise is %d", HourSunrise);
   }
   Tuple * sunset_t = dict_find(iter, MESSAGE_KEY_HourSunset);
   if (sunset_t){
-    HourSunset = (int) sunset_t -> value -> int32;
+    HourSunset = sunset_t -> value -> int32;
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "HourSunset is %d", HourSunrise);
   }
 
   Tuple * disntheme_t = dict_find(iter, MESSAGE_KEY_NightTheme);
@@ -1127,9 +1129,15 @@ static void tick_handler(struct tm * time_now, TimeUnits changed){
   int nowthehouris = s_hours * 100 + s_minutes;
   if (HourSunrise <= nowthehouris && nowthehouris <= HourSunset){
     IsNightNow = false;
-  } else{
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "isnightnow is false");
+    } else{
     IsNightNow = true;
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "isnightnow is true");
   }
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Hoursunrise is %d", HourSunrise);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Hoursunset is %d", HourSunset);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "nowthehouris is %d", nowthehouris);
+
   // Extra catch on sunrise and sunset
 /*  if (nowthehouris == HourSunrise || nowthehouris == HourSunset){
     s_countdown = 1;
@@ -1171,7 +1179,7 @@ static void init(){
   // Listen for AppMessages
   //Starting loop at 0
 //  s_loop = 0;
-  //s_countdown = settings.UpSlider;
+//  s_countdown = settings.UpSlider;
   //Clean vars
 
 //  strcpy(settings.windiconnowstring, "\U0000F04B");
