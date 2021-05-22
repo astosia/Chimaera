@@ -36,6 +36,7 @@
             "HealthOff",
             "AddZero12h",
             "RemoveZero24h",
+            "MonthDate",
             "NameLocation",
             "UpSlider",
             "NightTheme",
@@ -102,13 +103,39 @@
                     "type": "font"
                 },
                 {
+                    "file": "fonts/Zep-Regular.ttf",
+                    "name": "FONT_ZEPP_38",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
+                    "file": "fonts/steelfish rg.ttf",
+                    "name": "FONT_STEEL_36",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
+                    "file": "fonts/Copse-Narrow.ttf",
+                    "name": "FONT_COPSE_34",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
+                    "file": "fonts/OpenDyslexic-Narrow.ttf",
+                    "name": "FONT_OPEND_32",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
                     "file": "data/SteelfishRg-Regular.ffont",
+                    "characterRegex": "[0-9:]",
                     "name": "FONT_STEELFISHRG",
                     "targetPlatforms": null,
                     "type": "raw"
                 },
                 {
                     "file": "data/OpenDyslexic-Cond.ffont",
+                    "characterRegex": "[0-9:]",
                     "name": "FONT_OPEND",
                     "targetPlatforms": [
                         "basalt",
@@ -118,17 +145,8 @@
                     "type": "raw"
                 },
                 {
-                    "file": "data/OPTIBinnerGothic.ffont",
-                    "name": "FONT_BINGOTH",
-                    "targetPlatforms": [
-                        "basalt",
-                        "chalk",
-                        "diorite"
-                    ],
-                    "type": "raw"
-                },
-                {
                     "file": "data/Zep.ffont",
+                    "characterRegex": "[0-9:]",
                     "name": "FONT_ZEP",
                     "targetPlatforms": [
                         "basalt",
@@ -139,6 +157,7 @@
                 },
                 {
                     "file": "data/Copse-Cond.ffont",
+                    "characterRegex": "[0-9:]",
                     "name": "FONT_COPSE",
                     "targetPlatforms": [
                         "basalt",

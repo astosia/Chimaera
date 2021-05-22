@@ -65,5 +65,6 @@ typedef struct ClaySettings {
 //  bool HealthOff;
   bool AddZero12h;
   bool RemoveZero24h;
+  bool MonthDate;
 
 } __attribute__((__packed__)) ClaySettings;

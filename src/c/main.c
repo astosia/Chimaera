@@ -16,7 +16,7 @@
 
 //Static and initial vars
 static GFont //FontSunset, FontSunset12,FontMoonPhase,FontTemp, FontTempFore, FontWeatherIcons , FontWeatherCondition, FontWindDirection
-  FontDayOfTheWeekShortName, FontBTQTIcons;
+  FontOpendy, FontSteel, FontCopse, FontZepp, FontBTQTIcons;
 /*char
   sunsetstring[20],
   sunrisestring[20],
@@ -40,7 +40,7 @@ FFont* time_font;
 FFont* time_font_opend;
 FFont* time_font_copse;
 FFont* time_font_zep;
-FFont* time_font_bingoth;
+//FFont* time_font_bingoth;
 #endif
 
 static Window * s_window;
@@ -52,7 +52,7 @@ static Layer * s_canvas_bt_icon;
 static Layer * s_canvas_qt_icon;
 //static Layer *s_step_layer;
 Layer * time_area_layer;
-Layer * date_area_layer;
+//Layer * date_area_layer;
 
 
 static int s_month, s_hours, s_minutes, s_weekday, s_day;//, s_loop;//, s_countdown;//, s_battery_level;
@@ -99,6 +99,7 @@ static void prv_default_settings(){
   settings.NightTheme = false;
 //  settings.HealthOff = true;
   settings.AddZero12h = false;
+  settings.MonthDate = false;
   settings.RemoveZero24h = false;
 }
 int HourSunrise=700;
@@ -244,8 +245,8 @@ void layer_update_proc_background (Layer * back_layer, GContext * ctx){
 
   GRect TopBand =
     PBL_IF_ROUND_ELSE(
-      GRect(0, 0, bounds.size.w, 54),
-      GRect(0, 0, bounds.size.w, 49));
+      GRect(0, 0, bounds.size.w, 49),
+      GRect(0, 0, bounds.size.w, 42));
 
  GRect MediumBand =
     PBL_IF_ROUND_ELSE(
@@ -254,8 +255,8 @@ void layer_update_proc_background (Layer * back_layer, GContext * ctx){
 
  GRect BottomBand =
     PBL_IF_ROUND_ELSE(
-      GRect(0, 129, bounds.size.w, 51),
-      GRect(0, 122, bounds.size.w, 46));
+      GRect(0, 180-47, bounds.size.w, 47),
+      GRect(0, 168-40, bounds.size.w, 40));
 
       graphics_context_set_fill_color(ctx, ColorSelect(settings.FrameColor1, settings.FrameColor1N));
       graphics_fill_rect(ctx, MediumBand,0,GCornersAll);
@@ -285,9 +286,9 @@ void update_time_area_layer(Layer *l, GContext* ctx7) { //time layer
 
 // calculate font size
   #ifdef PBL_ROUND
-  int font_size = 82;//bounds.size.h * 1.15;
+  int font_size = 96;//bounds.size.h * 1.15;
   #else
-  int font_size = 80;//bounds.size.h * 1.15;
+  int font_size = 96;//bounds.size.h * 1.15;
   #endif
 // steelfish metrics
 //  int v_padding = bounds.size.h / 16;
@@ -309,27 +310,6 @@ void update_time_area_layer(Layer *l, GContext* ctx7) { //time layer
   //    h_adjust -= ACTION_BAR_WIDTH / 2 + 1;
    h_adjust = 0;
   #endif
-
-  /*char* fontstring;
-  char FontToDraw[20];
-
-  fontstring = settings.FontChoice;
-
-  if (strcmp(settings.FontChoice,"steel") == 0)
-  {
-  snprintf(FontToDraw, sizeof(FontToDraw), "%s",fontstring);
-        APP_LOG(APP_LOG_LEVEL_DEBUG, "Steelfish2");
-  }
-  else if (strcmp(settings.FontChoice,"opend") == 0) {
-    snprintf(FontToDraw, sizeof(FontToDraw), "%s",fontstring);
-          APP_LOG(APP_LOG_LEVEL_DEBUG, "OpenDyslexic2");
-  } else if (strcmp(settings.FontChoice,"copse") == 0)  {
-    snprintf(FontToDraw, sizeof(FontToDraw), "%s",fontstring);
-          APP_LOG(APP_LOG_LEVEL_DEBUG, "Copse2");
-  } else {
-    snprintf(FontToDraw, sizeof(FontToDraw), "%s",fontstring);
-              APP_LOG(APP_LOG_LEVEL_DEBUG, "Steelfish by default2");
-  }*/
 
   FPoint time_pos;
   fctx_begin_fill(&fctx);
@@ -356,11 +336,6 @@ void update_time_area_layer(Layer *l, GContext* ctx7) { //time layer
   {
   fctx_set_text_em_height(&fctx, time_font_zep, font_size);
 //    APP_LOG(APP_LOG_LEVEL_DEBUG, "Nouveau1");
-  }
-  else if(strcmp(settings.FontChoice,"goth") == 0)
-  {
-  fctx_set_text_em_height(&fctx, time_font_bingoth, font_size);
-//    APP_LOG(APP_LOG_LEVEL_DEBUG, "BinnerGothic1");
   }
   else {
   fctx_set_text_em_height(&fctx, time_font, font_size);
@@ -398,50 +373,79 @@ void update_time_area_layer(Layer *l, GContext* ctx7) { //time layer
     }
   }
 
-  int mindraw;
-  mindraw = s_minutes;
-  char minnow[3];
-  snprintf(minnow, sizeof(minnow), "%02d", mindraw);
+  //int mindraw;
+  //mindraw = s_minutes;
+  //char minnow[3];
+  //snprintf(minnow, sizeof(minnow), "%02d", mindraw);
+
+  time_t temp = time(NULL);
+  struct tm *time_now = localtime(&temp);
+  char minnow[20];
+  if (clock_is_24h_style() || settings.AddZero12h) {
+      strftime(minnow, sizeof(minnow),"%M",time_now);
+  } else {
+      strftime(minnow, sizeof(minnow),"%M",time_now);
+    }
+//  strftime(minnow, sizeof(minnow),PBL_IF_ROUND_ELSE("%a","%A"),time_now);
+//  APP_LOG(APP_LOG_LEVEL_DEBUG, "Weekday is %s",weekdaydraw);
 
   char timedraw[6];
   snprintf(timedraw, sizeof(timedraw), "%s:%s", hournow,minnow);
 
-  // draw hours
-  time_pos.x = INT_TO_FIXED(PBL_IF_ROUND_ELSE(125, 108+3) + h_adjust);
-  time_pos.y = INT_TO_FIXED(PBL_IF_ROUND_ELSE(137 , 130)  + v_adjust);
 
-  fctx_set_offset(&fctx, time_pos);
+
+  // draw hours
+
 
   #ifndef PBL_MICROPHONE
-  fctx_draw_string(&fctx, timedraw, time_font, GTextAlignmentRight, FTextAnchorBottom);
+  time_pos.x = INT_TO_FIXED(PBL_IF_ROUND_ELSE(90, 72) + h_adjust);
+  time_pos.y = INT_TO_FIXED(PBL_IF_ROUND_ELSE(90 , 168/2)  + v_adjust);
+
+  fctx_set_offset(&fctx, time_pos);
+  fctx_draw_string(&fctx, timedraw, time_font, GTextAlignmentCenter, FTextAnchorMiddle);
   #else
   if (strcmp(settings.FontChoice,"steel") == 0)
   {
-  fctx_draw_string(&fctx, timedraw, time_font, GTextAlignmentRight, FTextAnchorBottom);
+  time_pos.x = INT_TO_FIXED(PBL_IF_ROUND_ELSE(90, 72) + h_adjust);
+  time_pos.y = INT_TO_FIXED(PBL_IF_ROUND_ELSE(90 , 168/2)  + v_adjust);
+
+  fctx_set_offset(&fctx, time_pos);
+  fctx_draw_string(&fctx, timedraw, time_font, GTextAlignmentCenter, FTextAnchorMiddle);
 //        APP_LOG(APP_LOG_LEVEL_DEBUG, "Steelfish2");
   }
   else if(strcmp(settings.FontChoice,"opend") == 0)
   {
-  fctx_draw_string(&fctx, timedraw, time_font_opend, GTextAlignmentRight, FTextAnchorBottom);
+  time_pos.x = INT_TO_FIXED(PBL_IF_ROUND_ELSE(90, 72) + h_adjust);
+  time_pos.y = INT_TO_FIXED(PBL_IF_ROUND_ELSE(90-2 , 84-2)  + v_adjust);
+
+  fctx_set_offset(&fctx, time_pos);
+  fctx_draw_string(&fctx, timedraw, time_font_opend, GTextAlignmentCenter, FTextAnchorMiddle);
 //      APP_LOG(APP_LOG_LEVEL_DEBUG, "OpenDyslexic2");
   }
   else if(strcmp(settings.FontChoice,"cop") == 0)
   {
-  fctx_draw_string(&fctx, timedraw, time_font_copse, GTextAlignmentRight, FTextAnchorBottom);
+  time_pos.x = INT_TO_FIXED(PBL_IF_ROUND_ELSE(90, 72) + h_adjust);
+  time_pos.y = INT_TO_FIXED(PBL_IF_ROUND_ELSE(90-2 , 84-2)  + v_adjust);
+
+  fctx_set_offset(&fctx, time_pos);
+  fctx_draw_string(&fctx, timedraw, time_font_copse, GTextAlignmentCenter, FTextAnchorMiddle);
 //    APP_LOG(APP_LOG_LEVEL_DEBUG, "Copse2");
   }
   else if(strcmp(settings.FontChoice,"zep") == 0)
   {
-  fctx_draw_string(&fctx, timedraw, time_font_zep, GTextAlignmentRight, FTextAnchorBottom);
-//    APP_LOG(APP_LOG_LEVEL_DEBUG, "Copse2");
-  }
-  else if(strcmp(settings.FontChoice,"goth") == 0)
-  {
-  fctx_draw_string(&fctx, timedraw, time_font_bingoth, GTextAlignmentRight, FTextAnchorBottom);
+  time_pos.x = INT_TO_FIXED(PBL_IF_ROUND_ELSE(90, 72) + h_adjust);
+  time_pos.y = INT_TO_FIXED(PBL_IF_ROUND_ELSE(90-2 , 84-2)  + v_adjust);
+
+  fctx_set_offset(&fctx, time_pos);
+  fctx_draw_string(&fctx, timedraw, time_font_zep, GTextAlignmentCenter, FTextAnchorMiddle);
 //    APP_LOG(APP_LOG_LEVEL_DEBUG, "Copse2");
   }
   else {
-  fctx_draw_string(&fctx, timedraw, time_font, GTextAlignmentRight, FTextAnchorBottom);
+  time_pos.x = INT_TO_FIXED(PBL_IF_ROUND_ELSE(90, 72) + h_adjust);
+  time_pos.y = INT_TO_FIXED(PBL_IF_ROUND_ELSE(90 , 168/2)  + v_adjust);
+
+  fctx_set_offset(&fctx, time_pos);
+  fctx_draw_string(&fctx, timedraw, time_font, GTextAlignmentCenter, FTextAnchorMiddle);
 //    APP_LOG(APP_LOG_LEVEL_DEBUG, "Steelfish by default2");
   }
   //fctx_draw_string(&fctx, timedraw, FontToDraw, GTextAlignmentRight, FTextAnchorBottom);
@@ -451,172 +455,12 @@ void update_time_area_layer(Layer *l, GContext* ctx7) { //time layer
   fctx_deinit_context(&fctx);
 }
 
-
-void update_date_area_layer(Layer *a, GContext* ctx8){ //date layer
-
-  // check layer bounds
-  GRect bounds = layer_get_unobstructed_bounds(a);
-
-  #ifdef PBL_ROUND
- //   bounds = GRect(0, ROUND_VERTICAL_PADDING, bounds.size.w, bounds.size.h - ROUND_VERTICAL_PADDING * 2);
-     bounds = GRect(0, 0,bounds.size.w, bounds.size.h);
-  #else
-     bounds = GRect(0,0,bounds.size.w,bounds.size.h);
-  #endif
-
-  // initialize FCTX, the fancy 3rd party drawing library that all the cool kids use
-  FContext fctx;
-
-  fctx_init_context(&fctx, ctx8);
-  fctx_set_color_bias(&fctx, 0);
-  fctx_set_fill_color(&fctx, ColorSelect(settings.MinColor, settings.MinColorN));
-
-// calculate font size
-
-  #ifdef PBL_ROUND
-  int font_size = 54;//bounds.size.h * 1.15;
-  #else
-  int font_size = 50;//bounds.size.h * 1.15;
-  #endif
-  int h_adjust = 0;
-  int v_adjust = 0;
-
-    #ifdef PBL_COLOR
-      fctx_enable_aa(true);
-    #endif
-
-  // if it's a round watch, EVERYTHING CHANGES
-  #ifdef PBL_ROUND
-//    v_adjust = ROUND_VERTICAL_PADDING;
-    v_adjust = 0;
-
-  #else
-    // for rectangular watches, adjust X position based on sidebar position
-  //    h_adjust -= ACTION_BAR_WIDTH / 2 + 1;
-   h_adjust = 0;
-  #endif
-
-  FPoint time_pos;
-  fctx_begin_fill(&fctx);
-
-  #ifndef PBL_MICROPHONE
-  fctx_set_text_em_height(&fctx, time_font, font_size);
-  #else
-  if (strcmp(settings.FontChoice,"steel") == 0)
-  {
-  fctx_set_text_em_height(&fctx, time_font, font_size);
-//        APP_LOG(APP_LOG_LEVEL_DEBUG, "Steelfish3");
-  }
-  else if(strcmp(settings.FontChoice,"opend") == 0)
-  {
-  fctx_set_text_em_height(&fctx, time_font_opend, font_size);
-  //    APP_LOG(APP_LOG_LEVEL_DEBUG, "OpenDyslexic3");
-  }
-  else if(strcmp(settings.FontChoice,"cop") == 0)
-  {
-  fctx_set_text_em_height(&fctx, time_font_copse, font_size);
-//    APP_LOG(APP_LOG_LEVEL_DEBUG, "Copse3");
-  }
-  else if(strcmp(settings.FontChoice,"zep") == 0)
-  {
-  fctx_set_text_em_height(&fctx, time_font_zep, font_size);
-//    APP_LOG(APP_LOG_LEVEL_DEBUG, "Copse3");
-  }
-  else if(strcmp(settings.FontChoice,"goth") == 0)
-  {
-  fctx_set_text_em_height(&fctx, time_font_bingoth, font_size);
-//    APP_LOG(APP_LOG_LEVEL_DEBUG, "Copse3");
-  }
-  else {
-  fctx_set_text_em_height(&fctx, time_font, font_size);
-//    APP_LOG(APP_LOG_LEVEL_DEBUG, "Steelfish by default3");
-  }
-//  fctx_set_text_em_height(&fctx, FontSelect(time_font, time_font_opend, time_font_copse), font_size);
-  #endif
-
-  fctx_set_color_bias(&fctx,0);
-
-  fctx_set_fill_color(&fctx, ColorSelect(settings.MinColor, settings.MinColorN));
-
-  int daydraw;
-  daydraw = s_day;
-  char daynow[8];
-  snprintf(daynow, sizeof(daynow), "%d", daydraw);
-
-  time_pos.x = INT_TO_FIXED(PBL_IF_ROUND_ELSE(150, 127) + h_adjust);
-  time_pos.y = INT_TO_FIXED(PBL_IF_ROUND_ELSE(133, 126)  + v_adjust);
-
-  fctx_set_offset(&fctx, time_pos);
-
-  #ifndef PBL_MICROPHONE
-  fctx_draw_string(&fctx, daynow, time_font, GTextAlignmentCenter, FTextAnchorBottom);
-  #else
-  if (strcmp(settings.FontChoice,"steel") == 0)
-  {
-  fctx_draw_string(&fctx, daynow, time_font, GTextAlignmentCenter, FTextAnchorBottom);
-  //      APP_LOG(APP_LOG_LEVEL_DEBUG, "Steelfish4");
-  }
-  else if(strcmp(settings.FontChoice,"opend") == 0)
-  {
-  fctx_draw_string(&fctx, daynow, time_font_opend, GTextAlignmentCenter, FTextAnchorBottom);
-  //    APP_LOG(APP_LOG_LEVEL_DEBUG, "OpenDyslexic4");
-  }
-  else if(strcmp(settings.FontChoice,"cop") == 0)
-  {
-  fctx_draw_string(&fctx, daynow, time_font_copse, GTextAlignmentCenter, FTextAnchorBottom);
-  //  APP_LOG(APP_LOG_LEVEL_DEBUG, "Copse4");
-  }
-  else if(strcmp(settings.FontChoice,"zep") == 0)
-  {
-  fctx_draw_string(&fctx, daynow, time_font_zep, GTextAlignmentCenter, FTextAnchorBottom);
-  //  APP_LOG(APP_LOG_LEVEL_DEBUG, "Copse4");
-  }
-  else if(strcmp(settings.FontChoice,"goth") == 0)
-  {
-  fctx_draw_string(&fctx, daynow, time_font_bingoth, GTextAlignmentCenter, FTextAnchorBottom);
-  //  APP_LOG(APP_LOG_LEVEL_DEBUG, "Copse4");
-  }
-  else {
-  fctx_draw_string(&fctx, daynow, time_font, GTextAlignmentCenter, FTextAnchorBottom);
-  //  APP_LOG(APP_LOG_LEVEL_DEBUG, "Steelfish by default4");
-  }
-//  fctx_draw_string(&fctx, daynow, FontSelect(time_font, time_font_opend, time_font_copse), GTextAlignmentCenter, FTextAnchorBottom);
-  #endif
-
-  fctx_end_fill(&fctx);
-
-  fctx_deinit_context(&fctx);
-}
-
-
-static void layer_update_proc(Layer * layer, GContext * ctx){
-
-
-//add in weather info
-  /*GRect IconNowRect = //weather condition icon
-       (PBL_IF_ROUND_ELSE(
-       GRect(0-4, 12,110,32),
-       GRect(0-4, 5, 62,50)));
-
-  GRect WindKtsRect =  //windspeed number
-       (PBL_IF_ROUND_ELSE(
-       (GRect(8,-3,180,30-6)),
-       (GRect(60-10,0-7,144-36-62+20,30-16))));
-
-  GRect TempRect =  //temperature number
-       (PBL_IF_ROUND_ELSE(
-         (GRect(8,30-12,180,30)),
-         (GRect(60-10,14,144-36-62+20,30))));
-
- GRect WindDirNowRect =  //wind direction icon
-      (PBL_IF_ROUND_ELSE(
-      (GRect(92,12,90,32)),
-      (GRect(110,4,36,46))));*/
+static void layer_update_proc(Layer * layer, GContext * ctx){ //battery
 
 GRect BatteryRect =
     (PBL_IF_ROUND_ELSE(
-    GRect(0,50,180,2),
-    GRect(0,45,144,2)));
+    GRect(0,47,180,2),
+    GRect(0,0,144,2)));
 
     //Battery
   int s_battery_level = battery_state_service_peek().charge_percent;
@@ -626,65 +470,13 @@ GRect BatteryRect =
 
   GRect BatteryFillRect =
     (PBL_IF_ROUND_ELSE(
-    GRect(10,50,width_round,2),
-    GRect(0,45,width_rect,2)));
+    GRect(10,47,width_round,2),
+    GRect(0,0,width_rect,2)));
 
   char battperc[20];
   snprintf(battperc, sizeof(battperc), "%d", s_battery_level);
   strcat(battperc, "%");
 
-   //   char SunsetToDraw[20];
-   //   char SunriseToDraw[20];
-   //    snprintf(SunsetToDraw, sizeof(SunsetToDraw), "%s",sunsetstring);
-   //    snprintf(SunriseToDraw, sizeof(SunriseToDraw), "%s",sunrisestring);
-//////////////////////////////
-/*
-   char CondToDraw[20];
-   char TempToDraw[20];
-   char SpeedToDraw[20];
-   char DirectionToDraw[20];
-
-
-
-
-  if (showForecastWeather)
-      {
-   snprintf(CondToDraw, sizeof(CondToDraw), "%s",settings.iconnowstring);
-   snprintf(TempToDraw, sizeof(TempToDraw), "%s",settings.tempstring);
-   snprintf(SpeedToDraw,sizeof(SpeedToDraw),"%s",settings.windstring);
-   snprintf(DirectionToDraw,sizeof(DirectionToDraw),"%s",settings.windiconnowstring);
-      }
-  else
-      {
-  snprintf(CondToDraw, sizeof(CondToDraw), "%s",settings.iconforestring);
-  snprintf(TempToDraw, sizeof(TempToDraw), "%s",settings.temphistring);
-  snprintf(SpeedToDraw,sizeof(SpeedToDraw),"%s",settings.windavestring);
-  snprintf(DirectionToDraw,sizeof(DirectionToDraw),"%s", settings.windiconavestring);
-      }
-
-
-
-  //Weathericon
-  graphics_context_set_text_color(ctx,ColorSelect(settings.Text7Color,settings.Text7ColorN));
-  graphics_draw_text(ctx, CondToDraw, FontWeatherCondition, IconNowRect, GTextOverflowModeFill, PBL_IF_ROUND_ELSE(GTextAlignmentCenter,GTextAlignmentCenter), NULL);
-  //Weather temp
-  if (showForecastWeather)
-      {
-        graphics_context_set_text_color(ctx,ColorSelect(settings.Text8Color,settings.Text8ColorN));
-        graphics_draw_text(ctx, TempToDraw, FontTemp, TempRect, GTextOverflowModeFill, PBL_IF_ROUND_ELSE(GTextAlignmentCenter,GTextAlignmentCenter), NULL);
-      }
-  else
-      {
-        graphics_context_set_text_color(ctx,ColorSelect(settings.Text8Color,settings.Text8ColorN));
-        graphics_draw_text(ctx, TempToDraw, FontTempFore, TempRect, GTextOverflowModeFill, PBL_IF_ROUND_ELSE(GTextAlignmentCenter,GTextAlignmentCenter), NULL);
-      }
-  //Wind speed
-  graphics_context_set_text_color(ctx,ColorSelect(settings.Text9Color,settings.Text9ColorN));
-  graphics_draw_text(ctx, SpeedToDraw, FontTempFore, WindKtsRect, GTextOverflowModeFill, PBL_IF_ROUND_ELSE(GTextAlignmentCenter,GTextAlignmentCenter), NULL);
-  //Wind Direction
-  graphics_context_set_text_color(ctx,ColorSelect(settings.Text10Color,settings.Text10ColorN));
-  graphics_draw_text(ctx, DirectionToDraw, FontWindDirection, WindDirNowRect, GTextOverflowModeFill, PBL_IF_ROUND_ELSE(GTextAlignmentCenter,GTextAlignmentCenter), NULL);
-*/
   // Draw the battery bar background
   graphics_context_set_fill_color(ctx, ColorSelect(settings.FrameColor2,settings.FrameColor2N));// GColorBlack);
   graphics_fill_rect(ctx, BatteryRect, 0, GCornerNone);
@@ -694,169 +486,116 @@ GRect BatteryRect =
   graphics_fill_rect(ctx,BatteryFillRect, 0, GCornerNone);
 }
 
-static void update_weekday_area_layer(Layer * b, GContext * ctx9){ //weekday layer
-    // check layer bounds
-  GRect bounds = layer_get_unobstructed_bounds(b);
+static void update_weekday_area_layer(Layer * layer2, GContext * ctx2){
+//add in steps, date, sunrise & sunset
 
-  #ifdef PBL_ROUND
- //   bounds = GRect(0, ROUND_VERTICAL_PADDING, bounds.size.w, bounds.size.h - ROUND_VERTICAL_PADDING * 2);
-     bounds = GRect(0, 0,bounds.size.w, bounds.size.h);
-  #else
-     bounds = GRect(0,0,bounds.size.w,bounds.size.h);
-  #endif
+  GRect DateRect =
+   //  (0, offsetdate, bounds3.size.w, bounds1.size.h/4);
+    (PBL_IF_ROUND_ELSE(
+       GRect(0, 2, 180, 20),
+       GRect(0, -2, 144, 20)));
 
-  // initialize FCTX, the fancy 3rd party drawing library that all the cool kids use
-  FContext fctx;
+  GRect MonthRect =
+  //  (0, offsetdate, bounds3.size.w, bounds1.size.h/4);
+   (PBL_IF_ROUND_ELSE(
+      GRect(0, 180-42-8, 180, 20),
+      GRect(0, 125, 144, 20)));
 
-  fctx_init_context(&fctx, ctx9);
-  fctx_set_color_bias(&fctx, 0);
-  fctx_set_fill_color(&fctx, ColorSelect(settings.Text3Color, settings.Text3ColorN));
 
-// calculate font size
 
-  #ifdef PBL_ROUND
-  int font_size = 20;//bounds.size.h * 1.15;
-  #else
-  int font_size = 20;//bounds.size.h * 1.15;
-  #endif
-  int h_adjust = 0;
-  int v_adjust = 0;
+    time_t temp = time(NULL);
+    struct tm *time_now = localtime(&temp);
+    char weekdaydraw[20];
+    strftime(weekdaydraw, sizeof(weekdaydraw),PBL_IF_ROUND_ELSE("%a","%A"),time_now);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Weekday is %s",weekdaydraw);
 
-    #ifdef PBL_COLOR
-      fctx_enable_aa(true);
+    int daydraw;
+    daydraw = s_day;
+    char daynow[8];
+    snprintf(daynow, sizeof(daynow), "%d", daydraw);
+
+    char datemonthdraw[20];
+    if (settings.MonthDate) {
+      strftime(datemonthdraw, sizeof(datemonthdraw),PBL_IF_ROUND_ELSE("%b %e","%b %e"),time_now);
+    } else {
+      strftime(datemonthdraw, sizeof(datemonthdraw),PBL_IF_ROUND_ELSE("%d %b","%d %b"),time_now);
+    }APP_LOG(APP_LOG_LEVEL_DEBUG, "month and date is %s",datemonthdraw);
+
+    #ifndef PBL_MICROPHONE
+    graphics_context_set_text_color(ctx2, ColorSelect(settings.Text3Color, settings.Text3ColorN));
+    graphics_draw_text(ctx2, weekdaydraw, FontSteel, DateRect, GTextOverflowModeWordWrap, PBL_IF_ROUND_ELSE(GTextAlignmentCenter,GTextAlignmentCenter), NULL);
+
+    graphics_context_set_text_color(ctx2, ColorSelect(settings.MinColor, settings.MinColorN));
+    graphics_draw_text(ctx2, datemonthdraw, FontSteel, MonthRect, GTextOverflowModeWordWrap, PBL_IF_ROUND_ELSE(GTextAlignmentCenter,GTextAlignmentCenter), NULL);  //        APP_LOG(APP_LOG_LEVEL_DEBUG, "Steelfish2");
+    #else
+    if (strcmp(settings.FontChoice,"steel") == 0)
+    {
+      graphics_context_set_text_color(ctx2, ColorSelect(settings.Text3Color, settings.Text3ColorN));
+      graphics_draw_text(ctx2, weekdaydraw, FontSteel, DateRect, GTextOverflowModeWordWrap, PBL_IF_ROUND_ELSE(GTextAlignmentCenter,GTextAlignmentCenter), NULL);
+
+      graphics_context_set_text_color(ctx2, ColorSelect(settings.MinColor, settings.MinColorN));
+      graphics_draw_text(ctx2, datemonthdraw, FontSteel, MonthRect, GTextOverflowModeWordWrap, PBL_IF_ROUND_ELSE(GTextAlignmentCenter,GTextAlignmentCenter), NULL);  //        APP_LOG(APP_LOG_LEVEL_DEBUG, "Steelfish2");
+    }
+    else if(strcmp(settings.FontChoice,"opend") == 0)
+    {
+      graphics_context_set_text_color(ctx2, ColorSelect(settings.Text3Color, settings.Text3ColorN));
+      graphics_draw_text(ctx2, weekdaydraw, FontOpendy, DateRect, GTextOverflowModeWordWrap, PBL_IF_ROUND_ELSE(GTextAlignmentCenter,GTextAlignmentCenter), NULL);
+
+      graphics_context_set_text_color(ctx2, ColorSelect(settings.MinColor, settings.MinColorN));
+      graphics_draw_text(ctx2, datemonthdraw, FontOpendy, MonthRect, GTextOverflowModeWordWrap, PBL_IF_ROUND_ELSE(GTextAlignmentCenter,GTextAlignmentCenter), NULL);    //      APP_LOG(APP_LOG_LEVEL_DEBUG, "OpenDyslexic2");
+    }
+    else if(strcmp(settings.FontChoice,"cop") == 0)
+    {
+      graphics_context_set_text_color(ctx2, ColorSelect(settings.Text3Color, settings.Text3ColorN));
+      graphics_draw_text(ctx2, weekdaydraw, FontCopse, DateRect, GTextOverflowModeWordWrap, PBL_IF_ROUND_ELSE(GTextAlignmentCenter,GTextAlignmentCenter), NULL);
+
+      graphics_context_set_text_color(ctx2, ColorSelect(settings.MinColor, settings.MinColorN));
+      graphics_draw_text(ctx2, datemonthdraw, FontCopse, MonthRect, GTextOverflowModeWordWrap, PBL_IF_ROUND_ELSE(GTextAlignmentCenter,GTextAlignmentCenter), NULL);  //    APP_LOG(APP_LOG_LEVEL_DEBUG, "Copse2");
+    }
+    else if(strcmp(settings.FontChoice,"zep") == 0)
+    {
+      graphics_context_set_text_color(ctx2, ColorSelect(settings.Text3Color, settings.Text3ColorN));
+      graphics_draw_text(ctx2, weekdaydraw, FontZepp, DateRect, GTextOverflowModeWordWrap, PBL_IF_ROUND_ELSE(GTextAlignmentCenter,GTextAlignmentCenter), NULL);
+
+      graphics_context_set_text_color(ctx2, ColorSelect(settings.MinColor, settings.MinColorN));
+      graphics_draw_text(ctx2, datemonthdraw, FontZepp, MonthRect, GTextOverflowModeWordWrap, PBL_IF_ROUND_ELSE(GTextAlignmentCenter,GTextAlignmentCenter), NULL);    //    APP_LOG(APP_LOG_LEVEL_DEBUG, "Copse2");
+    }
+    else {
+      graphics_context_set_text_color(ctx2, ColorSelect(settings.Text3Color, settings.Text3ColorN));
+      graphics_draw_text(ctx2, weekdaydraw, FontSteel, DateRect, GTextOverflowModeWordWrap, PBL_IF_ROUND_ELSE(GTextAlignmentCenter,GTextAlignmentCenter), NULL);
+
+      graphics_context_set_text_color(ctx2, ColorSelect(settings.MinColor, settings.MinColorN));
+      graphics_draw_text(ctx2, datemonthdraw, FontSteel, MonthRect, GTextOverflowModeWordWrap, PBL_IF_ROUND_ELSE(GTextAlignmentCenter,GTextAlignmentCenter), NULL);    //    APP_LOG(APP_LOG_LEVEL_DEBUG, "Steelfish by default2");
+    }
     #endif
 
-  // if it's a round watch, EVERYTHING CHANGES
-  #ifdef PBL_ROUND
-//    v_adjust = ROUND_VERTICAL_PADDING;
-    v_adjust = 0;
 
-  #else
-    // for rectangular watches, adjust X position based on sidebar position
-  //    h_adjust -= ACTION_BAR_WIDTH / 2 + 1;
-   h_adjust = 0;
-  #endif
-
-  FPoint wday_pos;
-  fctx_begin_fill(&fctx);
-
-  #ifndef PBL_MICROPHONE
-  fctx_set_text_em_height(&fctx, time_font, font_size);
-  #else
-  if (strcmp(settings.FontChoice,"steel") == 0)
-  {
-  fctx_set_text_em_height(&fctx, time_font, font_size);
-//        APP_LOG(APP_LOG_LEVEL_DEBUG, "Steelfish3");
-  }
-  else if(strcmp(settings.FontChoice,"opend") == 0)
-  {
-  fctx_set_text_em_height(&fctx, time_font_opend, font_size);
-  //    APP_LOG(APP_LOG_LEVEL_DEBUG, "OpenDyslexic3");
-  }
-  else if(strcmp(settings.FontChoice,"cop") == 0)
-  {
-  fctx_set_text_em_height(&fctx, time_font_copse, font_size);
-//    APP_LOG(APP_LOG_LEVEL_DEBUG, "Copse3");
-  }
-  else if(strcmp(settings.FontChoice,"zep") == 0)
-  {
-  fctx_set_text_em_height(&fctx, time_font_zep, font_size);
-//    APP_LOG(APP_LOG_LEVEL_DEBUG, "Copse3");
-  }
-  else if(strcmp(settings.FontChoice,"goth") == 0)
-  {
-  fctx_set_text_em_height(&fctx, time_font_bingoth, font_size);
-//    APP_LOG(APP_LOG_LEVEL_DEBUG, "Copse3");
-  }
-  else {
-  fctx_set_text_em_height(&fctx, time_font, font_size);
-//    APP_LOG(APP_LOG_LEVEL_DEBUG, "Steelfish by default3");
-  }
-//  fctx_set_text_em_height(&fctx, FontSelect(time_font, time_font_opend, time_font_copse), font_size);
-  #endif
-
-  fctx_set_color_bias(&fctx,0);
-  fctx_set_fill_color(&fctx, ColorSelect(settings.Text3Color, settings.Text3ColorN));
-
-//  int daydraw;
-//  daydraw = s_day;
-//  char daynow[8];
-//  snprintf(daynow, sizeof(daynow), "%d", daydraw);
-
-  time_t temp = time(NULL);
-  struct tm *time_now = localtime(&temp);
-  char weekdaydraw[20];
-  strftime(weekdaydraw, sizeof(weekdaydraw),"%a",time_now);
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Weekday is %s",weekdaydraw);
-
-  wday_pos.x = INT_TO_FIXED(PBL_IF_ROUND_ELSE(180/2, 144/2) + h_adjust);
-  wday_pos.y = INT_TO_FIXED(PBL_IF_ROUND_ELSE(180/2, 168/2)  + v_adjust);
-
-  fctx_set_offset(&fctx, wday_pos);
-
-  #ifndef PBL_MICROPHONE
-  fctx_draw_string(&fctx, weekdaydraw, time_font, GTextAlignmentCenter, FTextAnchorBottom);
-  #else
-  if (strcmp(settings.FontChoice,"steel") == 0)
-  {
-  fctx_draw_string(&fctx, weekdaydraw, time_font, GTextAlignmentCenter, FTextAnchorBottom);
-  //      APP_LOG(APP_LOG_LEVEL_DEBUG, "Steelfish4");
-  }
-  else if(strcmp(settings.FontChoice,"opend") == 0)
-  {
-  fctx_draw_string(&fctx, weekdaydraw, time_font_opend, GTextAlignmentCenter, FTextAnchorBottom);
-  //    APP_LOG(APP_LOG_LEVEL_DEBUG, "OpenDyslexic4");
-  }
-  else if(strcmp(settings.FontChoice,"cop") == 0)
-  {
-  fctx_draw_string(&fctx, weekdaydraw, time_font_copse, GTextAlignmentCenter, FTextAnchorBottom);
-  //  APP_LOG(APP_LOG_LEVEL_DEBUG, "Copse4");
-  }
-  else if(strcmp(settings.FontChoice,"zep") == 0)
-  {
-  fctx_draw_string(&fctx, weekdaydraw, time_font_zep, GTextAlignmentCenter, FTextAnchorBottom);
-  //  APP_LOG(APP_LOG_LEVEL_DEBUG, "Copse4");
-  }
-  else if(strcmp(settings.FontChoice,"goth") == 0)
-  {
-  fctx_draw_string(&fctx, weekdaydraw, time_font_bingoth, GTextAlignmentCenter, FTextAnchorBottom);
-  //  APP_LOG(APP_LOG_LEVEL_DEBUG, "Copse4");
-  }
-  else {
-  fctx_draw_string(&fctx, weekdaydraw, time_font, GTextAlignmentCenter, FTextAnchorBottom);
-  //  APP_LOG(APP_LOG_LEVEL_DEBUG, "Steelfish by default4");
-  }
-//  fctx_draw_string(&fctx, daynow, FontSelect(time_font, time_font_opend, time_font_copse), GTextAlignmentCenter, FTextAnchorBottom);
-  #endif
-
-  fctx_end_fill(&fctx);
-  fctx_deinit_context(&fctx);
 }
 
 static void layer_update_proc_bt(Layer * layer3, GContext * ctx3){
    GRect BTIconRect =
     (PBL_IF_ROUND_ELSE(
-      GRect(146,129,16,20),
-      GRect(8,130,108,20)));
+      GRect(180-20-30,140,16,20),
+      GRect(144-19,140,18,20)));
 
  //onreconnection(BTOn, connection_service_peek_pebble_app_connection());
  bluetooth_callback(connection_service_peek_pebble_app_connection());
 
  graphics_context_set_text_color(ctx3, ColorSelect(settings.Text5Color, settings.Text5ColorN));
- graphics_draw_text(ctx3, "z", FontBTQTIcons, BTIconRect, GTextOverflowModeFill,GTextAlignmentCenter, NULL);
+ graphics_draw_text(ctx3, "z", FontBTQTIcons, BTIconRect, GTextOverflowModeFill,GTextAlignmentRight, NULL);
 
 }
 
 static void layer_update_proc_qt(Layer * layer4, GContext * ctx4){
   GRect QTIconRect =
     (PBL_IF_ROUND_ELSE(
-      GRect(10,129,32,20),
-      GRect(0-8,130,108,20)));
+      GRect(32,140,30,20),
+      GRect(4,140,30,20)));
 
  quiet_time_icon();
 
  graphics_context_set_text_color(ctx4, ColorSelect(settings.Text5Color, settings.Text5ColorN));
- graphics_draw_text(ctx4, "\U0000E061", FontBTQTIcons, QTIconRect, GTextOverflowModeFill,GTextAlignmentCenter, NULL);
+ graphics_draw_text(ctx4, "\U0000E061", FontBTQTIcons, QTIconRect, GTextOverflowModeFill,GTextAlignmentLeft, NULL);
 
 }
 
@@ -1185,6 +924,16 @@ settings.Text10Color = GColorFromHEX(tx10_color_t-> value -> int32);
        "%s", "");
     }
   }*/
+  Tuple * mondate_t = dict_find(iter, MESSAGE_KEY_MonthDate);
+  if (mondate_t){
+    if (mondate_t -> value -> int32 == 0){
+      settings.MonthDate = false;
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "DD MM");
+    } else {
+    settings.MonthDate = true;
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "MM DD");
+      }
+    }
 
   Tuple * addzero12_t = dict_find(iter, MESSAGE_KEY_AddZero12h);
   if (addzero12_t){
@@ -1210,7 +959,7 @@ settings.Text10Color = GColorFromHEX(tx10_color_t-> value -> int32);
 
   layer_mark_dirty(s_canvas_top_section);
   layer_mark_dirty(time_area_layer);
-  layer_mark_dirty(date_area_layer);
+//  layer_mark_dirty(date_area_layer);
   layer_mark_dirty(s_canvas_bottom_section);
   layer_mark_dirty(s_canvas_bt_icon);
   layer_mark_dirty(s_canvas_qt_icon);
@@ -1232,9 +981,9 @@ static void window_load(Window * window){
      layer_add_child(window_layer, time_area_layer);
      layer_set_update_proc(time_area_layer, update_time_area_layer);
 
-  date_area_layer = layer_create(bounds4);
-     layer_add_child(window_layer, date_area_layer);
-     layer_set_update_proc(date_area_layer, update_date_area_layer);
+  //date_area_layer = layer_create(bounds4);
+  //   layer_add_child(window_layer, date_area_layer);
+  //   layer_set_update_proc(date_area_layer, update_date_area_layer);
 
 
 
@@ -1272,13 +1021,18 @@ static void window_unload(Window * window){
   //text_layer_destroy (s_step_layer);
   layer_destroy(s_canvas_top_section);
   layer_destroy(time_area_layer);
-  layer_destroy(date_area_layer);
+//  layer_destroy(date_area_layer);
   layer_destroy(s_canvas_bottom_section);
   layer_destroy(s_canvas_bt_icon);
   layer_destroy(s_canvas_qt_icon);
   window_destroy(s_window);
 //  fonts_unload_custom_font(FontMoonPhase);
   fonts_unload_custom_font(FontBTQTIcons);
+  fonts_unload_custom_font(FontSteel);
+  fonts_unload_custom_font(FontZepp);
+  fonts_unload_custom_font(FontCopse);
+  fonts_unload_custom_font(FontOpendy);
+
 //  fonts_unload_custom_font(FontWeatherIcons);
 //  fonts_unload_custom_font(FontWeatherCondition);
 //  fonts_unload_custom_font(FontWindDirection);
@@ -1287,7 +1041,7 @@ static void window_unload(Window * window){
   ffont_destroy(time_font_opend);
   ffont_destroy(time_font_copse);
   ffont_destroy(time_font_zep);
-  ffont_destroy(time_font_bingoth);
+//  ffont_destroy(time_font_bingoth);
   #endif
 }
 void main_window_push(){
@@ -1311,7 +1065,7 @@ void main_window_update(int months, int hours, int minutes, int weekday, int day
 //  layer_mark_dirty(s_canvas);
 //  layer_mark_dirty(time_area_layer);
 //  layer_mark_dirty(date_area_layer);
-  layer_mark_dirty(s_canvas_bottom_section);
+//  layer_mark_dirty(s_canvas_bottom_section);
 //  layer_mark_dirty(s_canvas_bt_icon);
 //  layer_mark_dirty(s_canvas_qt_icon);
 
@@ -1353,7 +1107,7 @@ static void tick_handler(struct tm * time_now, TimeUnits changed){
     layer_mark_dirty(s_canvas_background);
     layer_mark_dirty(s_canvas_top_section);
     layer_mark_dirty(time_area_layer);
-    layer_mark_dirty(date_area_layer);
+  //  layer_mark_dirty(date_area_layer);
     layer_mark_dirty(s_canvas_bottom_section);
     layer_mark_dirty(s_canvas_bt_icon);
     layer_mark_dirty(s_canvas_qt_icon);
@@ -1404,9 +1158,13 @@ static void init(){
   time_font_opend =  ffont_create_from_resource(RESOURCE_ID_FONT_OPEND);
   time_font_copse =  ffont_create_from_resource(RESOURCE_ID_FONT_COPSE);
   time_font_zep =  ffont_create_from_resource(RESOURCE_ID_FONT_ZEP);
-  time_font_bingoth = ffont_create_from_resource(RESOURCE_ID_FONT_BINGOTH);
+  //time_font_bingoth = ffont_create_from_resource(RESOURCE_ID_FONT_BINGOTH);
   #endif
-  FontDayOfTheWeekShortName = fonts_get_system_font(PBL_IF_ROUND_ELSE(FONT_KEY_GOTHIC_28_BOLD,FONT_KEY_GOTHIC_24_BOLD));
+//  FontZepp = fonts_get_system_font(PBL_IF_ROUND_ELSE(FONT_KEY_GOTHIC_28_BOLD,FONT_KEY_GOTHIC_24_BOLD));
+  FontZepp = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ZEPP_38));
+  FontSteel = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_STEEL_36));
+  FontOpendy = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_OPEND_32));
+  FontCopse = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_COPSE_34));
   //FontSunset = fonts_get_system_font(PBL_IF_ROUND_ELSE(FONT_KEY_GOTHIC_18_BOLD,FONT_KEY_GOTHIC_24_BOLD));
   //FontSunset12 = fonts_get_system_font(PBL_IF_ROUND_ELSE(FONT_KEY_GOTHIC_18,FONT_KEY_GOTHIC_24));
   //FontMoonPhase = fonts_load_custom_font(resource_get_handle(PBL_IF_ROUND_ELSE(RESOURCE_ID_FONT_WEATHERICONS_22,RESOURCE_ID_FONT_WEATHERICONS_26)));

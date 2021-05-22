@@ -16,8 +16,8 @@ module.exports = [
        "type": "select",
        "messageKey": "FontChoice",
        "defaultValue": 'steel',
-       "label": "Time & Date Font",
-       "capabilities":["HEALTH"],
+       "label": "Font",
+       "capabilities":["MICROPHONE"],
        "options": [
          {
            "label": "Steelfish",
@@ -30,10 +30,6 @@ module.exports = [
          {
            "label": "Nouveau",
            "value": "zep",
-         },
-         {
-           "label": "Binner Gothic",
-           "value": "goth",
          },
          {
            "label": "Copse",
@@ -111,6 +107,12 @@ module.exports = [
         "allowGray":true
       },
       {
+        "type": "toggle",
+        "messageKey": "MonthDate",
+        "label": "Put Month before Date",
+        "defaultValue": false
+      },
+      {
         "type": "color",
         "messageKey": "MinColor",
         "defaultValue": "0xFFFFFF",
@@ -121,7 +123,7 @@ module.exports = [
         "type": "color",
         "messageKey": "Text5Color",
         "defaultValue": "0xFFFFFF",
-        "label": "BT & QT Colour",
+        "label": "Bluetooth & Quiet Time Icon Colour",
         "allowGray":true
       },
       {"type": "section",
@@ -200,15 +202,15 @@ module.exports = [
           "defaultValue": "0x000000",
           "label": "Date & Month Colour",
           "allowGray":true
-         },
-         {
+        },
+        {
           "type": "color",
-          "messageKey": "Text5ColorN",
+          "messageKey": "Text5Color",
           "defaultValue": "0x000000",
-          "label": "BT & QT Colour",
+          "label": "Bluetooth & Quiet Time Icon Colour",
           "allowGray":true
-         }
-       ]
+        }
+               ]
          }
        ]
       },
