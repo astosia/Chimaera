@@ -455,23 +455,24 @@ void update_time_area_layer(Layer *l, GContext* ctx7) { //time layer
   fctx_deinit_context(&fctx);
 }
 
-static void layer_update_proc(Layer * layer, GContext * ctx){ //battery
+#ifndef PBL_ROUND
+static void layer_update_proc(Layer * layer, GContext * ctx){ //battery rect
 
-GRect BatteryRect =
-    (PBL_IF_ROUND_ELSE(
-    GRect(0,47,180,2),
-    GRect(0,0,144,2)));
+    GRect BatteryRect =
+    //(PBL_IF_ROUND_ELSE(
+    //GRect(0,47,180,2),
+    GRect(0,0,144,2);//));
 
-    //Battery
+       //Battery
   int s_battery_level = battery_state_service_peek().charge_percent;
 
   int width_rect = (s_battery_level * 144) / 100;
   int width_round = (s_battery_level * 160) / 100;
 
-  GRect BatteryFillRect =
-    (PBL_IF_ROUND_ELSE(
-    GRect(10,47,width_round,2),
-    GRect(0,0,width_rect,2)));
+    GRect BatteryFillRect =
+    //(PBL_IF_ROUND_ELSE(
+    //GRect(10,47,width_round,2),
+    GRect(0,0,width_rect,2);//));
 
   char battperc[20];
   snprintf(battperc, sizeof(battperc), "%d", s_battery_level);
@@ -485,6 +486,39 @@ GRect BatteryRect =
   graphics_context_set_fill_color(ctx, ColorSelect(settings.Text6Color, settings.Text6ColorN));
   graphics_fill_rect(ctx,BatteryFillRect, 0, GCornerNone);
 }
+#endif
+
+#ifdef PBL_ROUND
+static void layer_update_proc(Layer * layer, GContext * ctx){
+  //#define BATTERY_ANGLE(battery) battery * (TRIG_MAX_ANGLE/100)
+
+  GRect Empty =
+  GRect (11,49,6+3,4);
+  GRect Full =
+  GRect (11,129,6+3,4);
+  GRect Half =
+  GRect (0,87,6+3,4);
+
+  graphics_context_set_fill_color(ctx, ColorSelect(settings.Text6Color, settings.Text6ColorN));
+  graphics_fill_rect(ctx,Empty, 0, GCornerNone);
+  graphics_fill_rect(ctx,Full, 0, GCornerNone);
+  graphics_fill_rect(ctx,Half, 0, GCornerNone);
+
+  GRect BatteryRect =
+  //(PBL_IF_ROUND_ELSE(
+  //GRect(0,47,180,2),
+  GRect(0,0,180,180);//));
+
+  int s_battery_level = battery_state_service_peek().charge_percent;
+  int start_angle = (TRIG_MAX_ANGLE/360)*242;
+  int end_angle = ((s_battery_level * TRIG_MAX_ANGLE/360*56) / 100) + start_angle;
+  graphics_context_set_fill_color(ctx, ColorSelect(settings.Text6Color, settings.Text6ColorN));
+
+  graphics_fill_radial(ctx,BatteryRect,GOvalScaleModeFitCircle,6,start_angle,end_angle);
+
+} //battery round
+
+#endif
 
 static void update_weekday_area_layer(Layer * layer2, GContext * ctx2){
 //add in steps, date, sunrise & sunset
@@ -1006,13 +1040,15 @@ static void window_load(Window * window){
       layer_add_child(window_layer, text_layer_get_layer(s_step_layer));
 */
 
-  s_canvas_top_section = layer_create(bounds4);
-      layer_set_update_proc(s_canvas_top_section, layer_update_proc);
-      layer_add_child(window_layer, s_canvas_top_section);
+
 
   s_canvas_bottom_section = layer_create(bounds4);
         layer_set_update_proc (s_canvas_bottom_section, update_weekday_area_layer);
         layer_add_child(window_layer, s_canvas_bottom_section);
+
+    s_canvas_top_section = layer_create(bounds4);
+        layer_set_update_proc(s_canvas_top_section, layer_update_proc);
+        layer_add_child(window_layer, s_canvas_top_section);
   }
 
 
