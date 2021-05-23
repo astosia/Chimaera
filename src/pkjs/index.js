@@ -280,6 +280,8 @@ function suncalcinfo (pos){
   //var lon= pos.coords.longitude;
         var d = new Date();
         var sunTimes = SunCalc.getTimes(d, lat, lon);
+        var sunsetraw = sunTimes.sunset.toTimeString().split(' ')[0];
+        var sunriseraw = sunTimes.sunrise.toTimeString().split(' ')[0];
         var sunsetStrhr = ('0'+sunTimes.sunset.getHours()).substr(-2);
         var sunsetStrmin = ('0'+sunTimes.sunset.getMinutes()).substr(-2);
         var sunsetStr = String(sunsetStrhr + ":" + sunsetStrmin);

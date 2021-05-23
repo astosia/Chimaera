@@ -6,6 +6,7 @@
 #include <pebble-fctx/fpath.h>
 #include <pebble-fctx/ffont.h>
 #include <locale.h>
+#include <ctype.h>
 
 #define ROUND_VERTICAL_PADDING 15
 #define ROTATION_SETTING_DEFAULT 0
@@ -505,11 +506,11 @@ static void layer_update_proc(Layer * layer, GContext * ctx){
   //#define BATTERY_ANGLE(battery) battery * (TRIG_MAX_ANGLE/100)
 
   GRect Empty =
-  GRect (11,49,6+3,4);
+  GRect (10,49,6+3,4);
   GRect Full =
-  GRect (11,129,6+3,4);
+  GRect (10,129,6+3,4);
   GRect Half =
-  GRect (0,87,6+3,4);
+  GRect (0-1,87,6+3,4);
 
   graphics_context_set_fill_color(ctx, ColorSelect(settings.Text6Color, settings.Text6ColorN));
   graphics_fill_rect(ctx,Empty, 0, GCornerNone);
@@ -526,7 +527,7 @@ static void layer_update_proc(Layer * layer, GContext * ctx){
   int end_angle = ((s_battery_level * TRIG_MAX_ANGLE/360*56) / 100) + start_angle;
   graphics_context_set_fill_color(ctx, ColorSelect(settings.Text6Color, settings.Text6ColorN));
 
-  graphics_fill_radial(ctx,BatteryRect,GOvalScaleModeFitCircle,6,start_angle,end_angle);
+  graphics_fill_radial(ctx,BatteryRect,GOvalScaleModeFitCircle,5,start_angle,end_angle);
 
 } //battery round
 
@@ -553,7 +554,13 @@ static void update_weekday_area_layer(Layer * layer2, GContext * ctx2){
     struct tm *time_now = localtime(&temp);
     char weekdaydraw[20];
     strftime(weekdaydraw, sizeof(weekdaydraw),PBL_IF_ROUND_ELSE("%a","%A"),time_now);
+
+
+  //  char weekdaystring [20];
+  //  snprintf (weekdaystring, sizeof(weekdaystring),"s",weekdaydraw->value->cstring);
+    //weekdaystring = weekdaystring.ToUpper();
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Weekday is %s",weekdaydraw);
+    //APP_LOG(APP_LOG_LEVEL_DEBUG, "Weekday is %s",datenow2);
 
     int daydraw;
     daydraw = s_day;
