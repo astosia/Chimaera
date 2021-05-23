@@ -347,7 +347,7 @@ void update_time_area_layer(Layer *l, GContext* ctx7) { //time layer
   fctx_set_color_bias(&fctx,0);
 
 
-  int hourdraw;
+  /*int hourdraw;
   char hournow[3];
   if (clock_is_24h_style()){
     if (settings.RemoveZero24h) {
@@ -371,7 +371,7 @@ void update_time_area_layer(Layer *l, GContext* ctx7) { //time layer
     snprintf(hournow, sizeof(hournow), "%d", hourdraw);
     }
     }
-  }
+  }*/
 
   //int mindraw;
   //mindraw = s_minutes;
@@ -380,17 +380,29 @@ void update_time_area_layer(Layer *l, GContext* ctx7) { //time layer
 
   time_t temp = time(NULL);
   struct tm *time_now = localtime(&temp);
-  char minnow[20];
-  if (clock_is_24h_style() || settings.AddZero12h) {
-      strftime(minnow, sizeof(minnow),"%M",time_now);
-  } else {
-      strftime(minnow, sizeof(minnow),"%M",time_now);
+  //char minnow[20];
+  //if (clock_is_24h_style() || settings.AddZero12h) {
+  //    strftime(minnow, sizeof(minnow),"%M",time_now);
+  //} else {
+  //    strftime(minnow, sizeof(minnow),"%M",time_now);
+  //  }
+
+
+    char timedraw[8];
+    if(clock_is_24h_style() && settings.RemoveZero24h){
+        strftime(timedraw, sizeof(timedraw),"%k:%M",time_now);
+    } else if (clock_is_24h_style() && !settings.RemoveZero24h) {
+        strftime(timedraw, sizeof(timedraw),"%H:%M",time_now);
+    } else if (settings.AddZero12h) {
+      strftime(timedraw, sizeof(timedraw),"%I:%M",time_now);
+    } else {
+      strftime(timedraw, sizeof(timedraw),"%l:%M",time_now);
     }
 //  strftime(minnow, sizeof(minnow),PBL_IF_ROUND_ELSE("%a","%A"),time_now);
 //  APP_LOG(APP_LOG_LEVEL_DEBUG, "Weekday is %s",weekdaydraw);
 
-  char timedraw[6];
-  snprintf(timedraw, sizeof(timedraw), "%s:%s", hournow,minnow);
+  //char timedraw[6];
+  //snprintf(timedraw, sizeof(timedraw), "%s:%s", hournow,minnow);
 
 
 
